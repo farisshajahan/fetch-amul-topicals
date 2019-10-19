@@ -127,56 +127,60 @@ if __name__ == "__main__":
     print
     d = {}
 
-    # asking user to enter location to save files
-    choice = get_user_choice("Save images in current working directory? (a new folder will be created in current directory)", ['y', 'n'])
-    if choice.lower() == 'y':
-        location = CWD  # storing images in current working directory (default)
-    elif choice.lower() == 'n':
-        # asking user for entering directory
-        location = input("Enter a directory to save images (a new folder will be created in the directory mentioned):")
-        while not os.path.isdir(location):
-            location = input("Not a valid directory, please enter again:")
-    # make new folder called 'Amul Topicals' in the directory; files will be stored in this folder
-    location = make_folder_in_directory(location, 'Amul Topicals')
+    try:
+        # asking user to enter location to save files
+        choice = get_user_choice("Save images in current working directory? (a new folder will be created in current directory)", ['y', 'n'])
+        if choice.lower() == 'y':
+            location = CWD  # storing images in current working directory (default)
+        elif choice.lower() == 'n':
+            # asking user for entering directory
+            location = input("Enter a directory to save images (a new folder will be created in the directory mentioned):")
+            while not os.path.isdir(location):
+                location = input("Not a valid directory, please enter again:")
+        # make new folder called 'Amul Topicals' in the directory; files will be stored in this folder
+        location = make_folder_in_directory(location, 'Amul Topicals')
 
-    # Take users choice of the form of download required.
-    choice = get_user_choice("\nHow would you like to download the topicals?\n1.Particular Year Topicals Only\n2.All Topicals Yearwise\n", ['1', '2'])
+        # Take users choice of the form of download required.
+        choice = get_user_choice("\nHow would you like to download the topicals?\n1.Particular Year Topicals Only\n2.All Topicals Yearwise\n", ['1', '2'])
 
-    c = 'y'
-    while str(c) == 'y' and choice == str(1):
-        # New user chosen year images only
-        user_catered = False
-        while user_catered == False:
-            print("\nEnter year of the required topicals: ")
-            year_input = int(input())
-            url = "?s=" + str(year_input)
-            year_available = False
+        c = 'y'
+        while str(c) == 'y' and choice == str(1):
+            # New user chosen year images only
+            user_catered = False
+            while user_catered == False:
+                print("\nEnter year of the required topicals: ")
+                year_input = int(input())
+                url = "?s=" + str(year_input)
+                year_available = False
 
-            # Checking whether entered Year is available in amul topical website
-            for name, u in sorted(year_urls.items()):
-                if str(u) == str(url):
-                    year_available = True
-                    break
-            if year_available:
-                try:
-                    year_page = fetch_url(BASE_URL+"?s="+str(year_input))
-                    per_year = get_year_topicals(year_page, location)
-                except:
-                    print("\nUnknown Error occured! Kindly check network connection.")
-                    exit(0)
-                user_catered = True
-            else:
-                print("\nTopicals for the entered year is not available!")
-                user_catered = False
-        c = get_user_choice("Would you like to download more topicals? ", ['y', 'n'])
+                # Checking whether entered Year is available in amul topical website
+                for name, u in sorted(year_urls.items()):
+                    if str(u) == str(url):
+                        year_available = True
+                        break
+                if year_available:
+                    try:
+                        year_page = fetch_url(BASE_URL+"?s="+str(year_input))
+                        per_year = get_year_topicals(year_page, location)
+                    except:
+                        print("\nUnknown Error occured! Kindly check network connection.")
+                        exit(0)
+                    user_catered = True
+                else:
+                    print("\nTopicals for the entered year is not available!")
+                    user_catered = False
+            c = get_user_choice("Would you like to download more topicals? ", ['y', 'n'])
 
-    if choice == str(2):
-        # Old method of one by one downloading each years images upon user choice y/n
-        for name, url in sorted(year_urls.items()):
-            year_page = fetch_url(BASE_URL + url)
-            per_year = get_year_topicals(year_page, location)
-            d[url[3:]] = per_year
-        json_data = json.dumps(d, sort_keys=True, indent=4, separators=(',', ': '))
+        if choice == str(2):
+            # Old method of one by one downloading each years images upon user choice y/n
+            for name, url in sorted(year_urls.items()):
+                year_page = fetch_url(BASE_URL + url)
+                per_year = get_year_topicals(year_page, location)
+                d[url[3:]] = per_year
+            json_data = json.dumps(d, sort_keys=True, indent=4, separators=(',', ': '))
 
-    # if user wants to view folder right away
-    open_folder(location)
+        # if user wants to view folder right away
+        open_folder(location)
+    except KeyboardInterrupt:
+        print("\nExiting the program.\nBye.")
+        sys.exit()
