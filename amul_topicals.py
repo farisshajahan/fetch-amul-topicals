@@ -10,7 +10,7 @@ if sys.version_info[0] >= 3:
 else:
     from urllib import urlretrieve
 
-HOST = 'http://www.amul.com'
+HOST = 'http://amul.com'
 BASE_URL = HOST + '/m/amul-hits'
 
 # current working directory
@@ -149,7 +149,7 @@ if __name__ == "__main__":
         while user_catered == False:
             print("\nEnter year of the required topicals: ")
             year_input = int(input())
-            url = "?s = " + str(year_input)
+            url = "?s=" + str(year_input)
             year_available = False
 
             # Checking whether entered Year is available in amul topical website
